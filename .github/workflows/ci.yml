@@ -1,7 +1,7 @@
 # This workflow will build a golang project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
-name: Go
+name: CI
 
 on:
   push:
@@ -10,15 +10,14 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
+    - uses: actions/checkout@v5
+    - uses: actions/setup-go@v5
       with:
-        go-version: '1.24.6'
-
-    - name: Test
-      run: go test -v -count=1 ./...
+        go-version: '>=1.24.6'
+    - run: go test -coverprofile=coverage.txt -v -count=1 ./...
+    - uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
