@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/clavinjune/nstd"
 	. "github.com/clavinjune/nstd"
 )
 
@@ -15,7 +16,7 @@ func ExampleBufferedWriter() {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b) // you can use any io.Writer here including os.Stdout
 
-	bw, closeBw := NewBufferedWriter(context.Background(), w, 15, 100*time.Millisecond)
+	bw, closeBw := nstd.NewBufferedWriter(context.Background(), w, 15, 100*time.Millisecond)
 	defer closeBw()
 
 	bw.Write([]byte("Hello, World!"))
