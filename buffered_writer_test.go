@@ -1,7 +1,6 @@
 package nstd_test
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"fmt"
@@ -13,10 +12,9 @@ import (
 )
 
 func ExampleBufferedWriter() {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b) // you can use any io.Writer here including os.Stdout
+	b := new(bytes.Buffer) // you can use any io.Writer here including os.Stdout
 
-	bw, closeBw := nstd.NewBufferedWriter(context.Background(), w, 15, 100*time.Millisecond)
+	bw, closeBw := nstd.NewBufferedWriter(context.Background(), b, 15, 100*time.Millisecond)
 	defer closeBw()
 
 	bw.Write([]byte("Hello, World!"))
@@ -26,9 +24,8 @@ func ExampleBufferedWriter() {
 }
 
 func TestBufferedWriter(t *testing.T) {
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
-	bw, closeBw := NewBufferedWriter(context.Background(), w, 15, 100*time.Millisecond)
+	b := new(bytes.Buffer)
+	bw, closeBw := NewBufferedWriter(context.Background(), b, 15, 100*time.Millisecond)
 	defer closeBw()
 
 	t.Run("more than flush interval", func(t *testing.T) {
