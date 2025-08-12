@@ -9,13 +9,13 @@ import (
 	"github.com/clavinjune/nstd"
 )
 
-func ExampleNewFlagSet() {
+func ExampleFlagSet() {
 	defer os.Clearenv()
 	os.Setenv("EXAMPLE_NAME", "from-envs")
 	fs := nstd.NewFlagSet("example", flag.ExitOnError)
 	nameFlag := fs.String("name", "default", "usage")
 
-	if err := fs.Parse([]string{"-name=from-args"}...); err != nil {
+	if err := fs.Parse("--name", "from-args"); err != nil {
 		panic(err)
 	}
 
@@ -23,7 +23,7 @@ func ExampleNewFlagSet() {
 	// Output: from-envs
 }
 
-func TestFlagSet_String(t *testing.T) {
+func TestFlagSet(t *testing.T) {
 	tt := []struct {
 		_        struct{}
 		Name     string
@@ -81,14 +81,8 @@ func TestFlagSet_String(t *testing.T) {
 			fs := nstd.NewFlagSet("test", flag.ExitOnError)
 			nameFlag := fs.String("name", "default", "usage")
 
-			if err := fs.Parse(tc.Args...); err != nil {
-				t.Fatalf("error on fs.Parse: %+q", err.Error())
-			}
-
-			if *nameFlag != tc.Expected {
-				t.Fatalf("expected: %+q, actual: %+q", tc.Expected, *nameFlag)
-			}
-
+			nstd.RequireNoErr(t, fs.Parse(tc.Args...))
+			nstd.RequireEqual(t, tc.Expected, *nameFlag)
 		})
 	}
 }
