@@ -10,6 +10,9 @@ import (
 
 var _ io.Writer = (*BufferedWriter)(nil)
 
+// BufferedWriter is a thread-safe buffered writer that writes to an underlying io.Writer.
+// It automatically flushes the buffer either when it reaches a certain size or after a specified time interval.
+// It supports cancellation via context, allowing graceful shutdowns.
 type BufferedWriter struct {
 	sync.Mutex
 	ctx               context.Context
@@ -20,6 +23,9 @@ type BufferedWriter struct {
 	lastFlushAt       time.Time
 }
 
+// NewBufferedWriter creates a new BufferedWriter with the specified parameters.
+// it runs an auto-flush goroutine that flushes the buffer either when it reaches the maxBufferSize
+// or after the flushInterval has passed.
 func NewBufferedWriter(ctx context.Context, w io.Writer, maxBufferSize int, flushInterval time.Duration) (*BufferedWriter, context.CancelFunc) {
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -35,6 +41,7 @@ func NewBufferedWriter(ctx context.Context, w io.Writer, maxBufferSize int, flus
 	return bw, cancel
 }
 
+// Write writes data to the underlying writer.
 func (b *BufferedWriter) Write(p []byte) (int, error) {
 	if b.ctx.Err() != nil {
 		return 0, b.ctx.Err()
@@ -58,6 +65,7 @@ func (b *BufferedWriter) Write(p []byte) (int, error) {
 	return n, err
 }
 
+// Flush flushes the buffered data to the underlying writer.
 func (b *BufferedWriter) Flush() error {
 	if err := b.writer.Flush(); err != nil {
 		return err
@@ -68,6 +76,9 @@ func (b *BufferedWriter) Flush() error {
 	return nil
 }
 
+// autoFlush runs in a separate goroutine and periodically checks if the buffer should be flushed.
+// it flushes the buffer if the time since the last flush exceeds the flushInterval.
+// it also flushes the buffer when the context is done.
 func (b *BufferedWriter) autoFlush() {
 	t := time.NewTicker(b.flushInterval)
 	defer t.Stop()

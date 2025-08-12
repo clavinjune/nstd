@@ -4,11 +4,25 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
 	. "github.com/clavinjune/nstd"
 )
+
+func ExampleBufferedWriter() {
+	var b bytes.Buffer
+	w := bufio.NewWriter(&b) // you can use any io.Writer here including os.Stdout
+
+	bw, closeBw := NewBufferedWriter(context.Background(), w, 15, 100*time.Millisecond)
+	defer closeBw()
+
+	bw.Write([]byte("Hello, World!"))
+	time.Sleep(150 * time.Millisecond) // Wait for auto-flush
+	fmt.Println(b.String())
+	// Output: Hello, World!
+}
 
 func TestBufferedWriter(t *testing.T) {
 	var b bytes.Buffer
