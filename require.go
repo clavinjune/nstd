@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// RequireNoErr checks if the error is nil, and if not, it fails the test with the error message.
 func RequireNoErr(t *testing.T, err error) {
 	t.Helper()
 
@@ -13,6 +14,7 @@ func RequireNoErr(t *testing.T, err error) {
 	}
 }
 
+// RequireErr checks if the error is not nil, and if it is nil, it fails the test with a message.
 func RequireErr(t *testing.T, err error) {
 	t.Helper()
 
@@ -21,6 +23,7 @@ func RequireErr(t *testing.T, err error) {
 	}
 }
 
+// RequireEqual checks if the expected and actual values are equal, and if not, it fails the test with a formatted message.
 func RequireEqual[T comparable](t *testing.T, expected, actual T) {
 	t.Helper()
 
@@ -29,6 +32,7 @@ func RequireEqual[T comparable](t *testing.T, expected, actual T) {
 	}
 }
 
+// RequireTrue checks if the condition is true, and if not, it fails the test with a message.
 func RequireTrue(t *testing.T, condition bool) {
 	t.Helper()
 
@@ -37,6 +41,7 @@ func RequireTrue(t *testing.T, condition bool) {
 	}
 }
 
+// RequireContain checks if the haystack string contains the needle string, and if not, it fails the test with a formatted message.
 func RequireContain(t *testing.T, haystack, needle string) {
 	t.Helper()
 
@@ -46,6 +51,8 @@ func RequireContain(t *testing.T, haystack, needle string) {
 
 	t.Fatalf("expected %q to contain %q", haystack, needle)
 }
+
+// RequireNotContain checks if the haystack string does not contain the needle string, and if it does, it fails the test with a formatted message.
 func RequireNotContain(t *testing.T, haystack, needle string) {
 	t.Helper()
 
@@ -54,4 +61,13 @@ func RequireNotContain(t *testing.T, haystack, needle string) {
 	}
 
 	t.Fatalf("expected %q to not contain %q", haystack, needle)
+}
+
+// RequireNotNil checks if the object is not nil, and if it is nil, it fails the test with a message.
+func RequireNotNil(t *testing.T, o any) {
+	t.Helper()
+
+	if o == nil {
+		t.Fatal("expected object to not be nil, got nil")
+	}
 }

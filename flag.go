@@ -44,7 +44,7 @@ func (fs *FlagSet) Parse(args ...string) error {
 	return fs.std.Parse(args)
 }
 
-// Bool wraps the standard flag.FlagSet BoolVar method to support environment variables.
+// Bool wraps the standard flag.FlagSet Bool method to support environment variables.
 func (fs *FlagSet) Bool(name string, value bool, usage string) *bool {
 	f := fs.std.Bool(name, value, usage)
 	e, ok := fs.getFromEnv(name)
@@ -59,7 +59,7 @@ func (fs *FlagSet) Bool(name string, value bool, usage string) *bool {
 	}
 }
 
-// String wraps the standard flag.FlagSet StringVar method to support environment variables.
+// String wraps the standard flag.FlagSet String method to support environment variables.
 func (fs *FlagSet) String(name, value, usage string) *string {
 	f := fs.std.String(name, value, usage)
 	if e, ok := fs.getFromEnv(name); ok {
@@ -69,7 +69,7 @@ func (fs *FlagSet) String(name, value, usage string) *string {
 	return f
 }
 
-// Int wraps the standard flag.FlagSet IntVar method to support environment variables.
+// Int wraps the standard flag.FlagSet Int method to support environment variables.
 func (fs *FlagSet) Int(name string, value int, usage string) *int {
 	f := fs.std.Int(name, value, usage)
 	e, ok := fs.getFromEnv(name)

@@ -2,25 +2,41 @@ package nstd_test
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"testing"
 
-	"github.com/clavinjune/nstd"
+	. "github.com/clavinjune/nstd"
 )
 
-func ExampleFlagSet() {
+func TestFlagSet_FromEnv(t *testing.T) {
 	defer os.Clearenv()
-	os.Setenv("EXAMPLE_NAME", "from-envs")
-	fs := nstd.NewFlagSet("example", flag.ExitOnError)
-	nameFlag := fs.String("name", "default", "usage")
+	t.Setenv("TEST_STR", "from-env")
+	t.Setenv("TEST_INT", "42")
+	t.Setenv("TEST_BOOL", "true")
 
-	if err := fs.Parse("--name", "from-args"); err != nil {
-		panic(err)
-	}
+	fs := NewFlagSet("test", flag.ExitOnError)
+	strFlag := fs.String("str", "default", "usage")
+	intFlag := fs.Int("int", 0, "usage")
+	boolFlag := fs.Bool("bool", false, "usage")
 
-	fmt.Println(*nameFlag)
-	// Output: from-envs
+	RequireNoErr(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
+	RequireEqual(t, "from-env", *strFlag)
+	RequireEqual(t, 42, *intFlag)
+	RequireEqual(t, true, *boolFlag)
+}
+
+func TestFlagSet_FromArgs(t *testing.T) {
+	defer os.Clearenv()
+
+	fs := NewFlagSet("test", flag.ExitOnError)
+	strFlag := fs.String("str", "default", "usage")
+	intFlag := fs.Int("int", 0, "usage")
+	boolFlag := fs.Bool("bool", false, "usage")
+
+	RequireNoErr(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
+	RequireEqual(t, "from-args", *strFlag)
+	RequireEqual(t, 100, *intFlag)
+	RequireEqual(t, true, *boolFlag)
 }
 
 func TestFlagSet(t *testing.T) {
@@ -78,11 +94,12 @@ func TestFlagSet(t *testing.T) {
 				t.Setenv(tc.EnvKey, tc.EnvValue)
 			}
 
-			fs := nstd.NewFlagSet("test", flag.ExitOnError)
+			fs := NewFlagSet("test", flag.ExitOnError)
 			nameFlag := fs.String("name", "default", "usage")
 
-			nstd.RequireNoErr(t, fs.Parse(tc.Args...))
-			nstd.RequireEqual(t, tc.Expected, *nameFlag)
+			RequireNotNil(t, fs.FlagSet())
+			RequireNoErr(t, fs.Parse(tc.Args...))
+			RequireEqual(t, tc.Expected, *nameFlag)
 		})
 	}
 }

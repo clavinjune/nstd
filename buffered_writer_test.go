@@ -3,25 +3,11 @@ package nstd_test
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
-	"github.com/clavinjune/nstd"
 	. "github.com/clavinjune/nstd"
 )
-
-func ExampleBufferedWriter() {
-	b := new(bytes.Buffer) // you can use any io.Writer here including os.Stdout
-
-	bw, closeBw := nstd.NewBufferedWriter(context.Background(), b, 15, 100*time.Millisecond)
-	defer closeBw()
-
-	bw.Write([]byte("Hello, World!"))
-	time.Sleep(150 * time.Millisecond) // Wait for auto-flush
-	fmt.Println(b.String())
-	// Output: Hello, World!
-}
 
 func TestBufferedWriter(t *testing.T) {
 	b := new(bytes.Buffer)
