@@ -3,8 +3,10 @@ package nstd_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
@@ -35,6 +37,43 @@ func ExampleFlagSet() {
 
 	fmt.Println(*nameFlag)
 	// Output: from-envs
+}
+
+func ExampleNewShutdownContext() {
+	// ShutdownContext will be canceled when a SIGINT or SIGTERM is received or manually canceled.
+	ctx, cancel := nstd.NewShutdownContext(context.Background())
+	defer cancel()
+	errChan := make(chan error, 1)
+
+	go func() {
+		if err := http.ListenAndServe(":8080", nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			errChan <- fmt.Errorf("server error: %w", err)
+		}
+	}()
+
+	// nstd.Wait will wait until the context is done or an error is received from the error channel.
+	if err := nstd.Wait(ctx, errChan); err != nil {
+		// handle the error, e.g., log it
+	}
+}
+
+func ExampleNewShutdownContextWithCause() {
+	// ShutdownContextWithCause will be more verbose about the cause of the shutdown.
+	ctx, cancel := nstd.NewShutdownContextWithCause(context.Background())
+	defer cancel(context.Canceled)
+
+	errChan := make(chan error, 1)
+	go func() {
+		if err := http.ListenAndServe(":8080", nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			errChan <- fmt.Errorf("server error: %w", err)
+		}
+	}()
+
+	// nstd.Wait will wait until the context is done or an error is received from the error channel.
+	if err := ctx.Wait(errChan); err != nil {
+		// handle the error, e.g., log it
+	}
+
 }
 
 func ExampleNewSlog() {

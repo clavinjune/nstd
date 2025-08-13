@@ -1,6 +1,7 @@
 package nstd
 
 import (
+	"errors"
 	"strings"
 	"testing"
 )
@@ -20,6 +21,22 @@ func RequireErr(t *testing.T, err error) {
 
 	if err == nil {
 		t.Fatal("expected an error, got nil")
+	}
+}
+
+// RequireErrIs checks if the error is of a specific type using errors.Is, and if not, it fails the test with a formatted message.
+func RequireErrIs(t *testing.T, err error, target error) {
+	t.Helper()
+	if !errors.Is(err, target) {
+		t.Fatalf("expected: %+v, actual: %+v", target, err)
+	}
+}
+
+// RequireErrAs checks if the error can be cast to a specific type using errors.As, and if not, it fails the test with a formatted message.
+func RequireErrAs(t *testing.T, err error, target any) {
+	t.Helper()
+	if !errors.As(err, target) {
+		t.Fatalf("expected: %+v, actual: %+v", target, err)
 	}
 }
 
