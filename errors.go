@@ -24,7 +24,7 @@ func newShutdownCause(s os.Signal) error {
 
 // Error returns the signal that causes
 func (s *shutdownCause) Error() string {
-	return fmt.Sprintf("%s: %s", context.Canceled, s.s.String())
+	return fmt.Sprintf("%s: %s", context.Canceled, s.String())
 }
 
 // Unwrap returns the underlying error, which is context.Canceled.
@@ -34,6 +34,7 @@ func (s *shutdownCause) Unwrap() error {
 
 // Signal implements the os.Signal interface, allowing shutdownCause to be used as a signal.
 func (s *shutdownCause) Signal() {
+	// NoOp
 }
 
 // String returns a string representation of the shutdownCause.
