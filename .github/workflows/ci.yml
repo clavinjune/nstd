@@ -21,6 +21,5 @@ jobs:
     - run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
     - uses: codecov/codecov-action@v5
       with:
-        exclude: "./examples/**,./require.go"
         gcov_ignore: "./examples/**,./require.go"
         token: ${{ secrets.CODECOV_TOKEN }}
