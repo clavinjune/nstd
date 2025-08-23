@@ -21,7 +21,7 @@ func TestShutdownContext(t *testing.T) {
 
 		err := Wait(ctx, nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.DeadlineExceeded, err)
+		RequireEqual(t, err, context.DeadlineExceeded)
 
 	})
 
@@ -35,7 +35,7 @@ func TestShutdownContext(t *testing.T) {
 
 		err := Wait(ctx, nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.Canceled, err)
+		RequireEqual(t, err, context.Canceled)
 	})
 
 	t.Run("shutdown due to syscall.SIGINT", func(t *testing.T) {
@@ -48,7 +48,7 @@ func TestShutdownContext(t *testing.T) {
 
 		err := Wait(ctx, nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.Canceled, err)
+		RequireEqual(t, err, context.Canceled)
 	})
 
 	t.Run("shutdown due to syscall.SIGTERM", func(t *testing.T) {
@@ -61,7 +61,7 @@ func TestShutdownContext(t *testing.T) {
 
 		err := Wait(ctx, nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.Canceled, err)
+		RequireEqual(t, err, context.Canceled)
 	})
 
 	t.Run("ignore syscall.SIGCHLD", func(t *testing.T) {
@@ -75,7 +75,7 @@ func TestShutdownContext(t *testing.T) {
 
 		err := Wait(ctx, nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.DeadlineExceeded, err)
+		RequireEqual(t, err, context.DeadlineExceeded)
 	})
 
 	t.Run("shutdown due to errorChan is filled", func(t *testing.T) {
@@ -89,7 +89,7 @@ func TestShutdownContext(t *testing.T) {
 
 		err := Wait(ctx, errChan)
 		RequireNotNil(t, err)
-		RequireEqual(t, sql.ErrNoRows, err)
+		RequireEqual(t, err, sql.ErrNoRows)
 	})
 }
 
@@ -103,7 +103,7 @@ func TestShutdownContextWithCause(t *testing.T) {
 
 		err := ctx.Wait(nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.DeadlineExceeded, err)
+		RequireEqual(t, err, context.DeadlineExceeded)
 
 	})
 
@@ -117,7 +117,7 @@ func TestShutdownContextWithCause(t *testing.T) {
 
 		err := ctx.Wait(nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.Canceled, err)
+		RequireEqual(t, err, context.Canceled)
 	})
 
 	t.Run("shutdown due to syscall.SIGINT", func(t *testing.T) {
@@ -157,7 +157,7 @@ func TestShutdownContextWithCause(t *testing.T) {
 
 		err := ctx.Wait(nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.DeadlineExceeded, err)
+		RequireEqual(t, err, context.DeadlineExceeded)
 	})
 
 	t.Run("shutdown due to errorChan is filled", func(t *testing.T) {
@@ -171,7 +171,7 @@ func TestShutdownContextWithCause(t *testing.T) {
 
 		err := ctx.Wait(errChan)
 		RequireNotNil(t, err)
-		RequireEqual(t, sql.ErrNoRows, err)
+		RequireEqual(t, err, sql.ErrNoRows)
 	})
 }
 
@@ -185,7 +185,7 @@ func TestShutdownContextCombined(t *testing.T) {
 
 		err := Wait(ctx, nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.DeadlineExceeded, err)
+		RequireEqual(t, err, context.DeadlineExceeded)
 
 	})
 
@@ -199,7 +199,7 @@ func TestShutdownContextCombined(t *testing.T) {
 
 		err := Wait(ctx, nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.Canceled, err)
+		RequireEqual(t, err, context.Canceled)
 	})
 
 	t.Run("shutdown due to syscall.SIGINT", func(t *testing.T) {
@@ -239,7 +239,7 @@ func TestShutdownContextCombined(t *testing.T) {
 
 		err := Wait(ctx, nil)
 		RequireNotNil(t, err)
-		RequireEqual(t, context.DeadlineExceeded, err)
+		RequireEqual(t, err, context.DeadlineExceeded)
 	})
 
 	t.Run("shutdown due to errorChan is filled", func(t *testing.T) {
@@ -253,6 +253,6 @@ func TestShutdownContextCombined(t *testing.T) {
 
 		err := Wait(ctx, errChan)
 		RequireNotNil(t, err)
-		RequireEqual(t, sql.ErrNoRows, err)
+		RequireEqual(t, err, sql.ErrNoRows)
 	})
 }
