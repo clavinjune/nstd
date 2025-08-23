@@ -38,7 +38,10 @@ func NewBufferedWriter(ctx context.Context, w io.Writer, maxBufferSize int, flus
 
 	go bw.autoFlush()
 
-	return bw, cancel
+	return bw, func() {
+		bw.Flush()
+		cancel()
+	}
 }
 
 // Write writes data to the underlying writer.

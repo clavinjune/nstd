@@ -18,39 +18,44 @@ func TestBufferedWriter(t *testing.T) {
 		defer b.Reset()
 
 		n, err := bw.Write([]byte("Hello, World!"))
-		RequireEqual(t, 13, n)
+		RequireEqual(t, n, 13)
 		RequireNil(t, err)
-		RequireEqual(t, "", b.String())
+		RequireEqual(t, b.String(), "")
 
 		time.Sleep(150 * time.Millisecond)
-		RequireEqual(t, "Hello, World!", b.String())
+		RequireEqual(t, b.String(), "Hello, World!")
 	})
 
 	t.Run("more than buffer size", func(t *testing.T) {
 		defer b.Reset()
 
 		n, err := bw.Write([]byte("more than 15bytes should be flushed immediately"))
-		RequireEqual(t, 47, n)
+		RequireEqual(t, n, 47)
 		RequireNil(t, err)
-		RequireEqual(t, "more than 15bytes should be flushed immediately", b.String())
+		RequireEqual(t, b.String(), "more than 15bytes should be flushed immediately")
 	})
 
 	t.Run("flush manually", func(t *testing.T) {
 		defer b.Reset()
 		n, err := bw.Write([]byte("a"))
-		RequireEqual(t, 1, n)
+		RequireEqual(t, n, 1)
 		RequireNil(t, err)
 		RequireNil(t, bw.Flush())
-		RequireEqual(t, "a", b.String())
+		RequireEqual(t, b.String(), "a")
 	})
 
 	t.Run("close buffered writer", func(t *testing.T) {
 		defer b.Reset()
+		n, err := bw.Write([]byte("written"))
+		RequireEqual(t, n, 7)
+		RequireNil(t, err)
 		closeBw()
+		RequireEqual(t, b.String(), "written")
 
-		n, err := bw.Write([]byte("This should not be written"))
-		RequireEqual(t, 0, n)
+		b.Reset()
+		n, err = bw.Write([]byte("This should not be written"))
+		RequireEqual(t, n, 0)
 		RequireNotNil(t, err)
-		RequireEqual(t, "", b.String())
+		RequireEqual(t, b.String(), "")
 	})
 }
