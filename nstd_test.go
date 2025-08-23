@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/clavinjune/nstd"
@@ -37,6 +38,19 @@ func ExampleFlagSet() {
 
 	fmt.Println(*nameFlag)
 	// Output: from-envs
+}
+
+func ExamplePipeFrom() {
+	ch := nstd.PipeFrom(0, 1, 2, 3)
+	evenCh := nstd.PipeFilter(ch, func(i int) bool {
+		return i%2 == 0
+	})
+	strCh := nstd.PipeMap(evenCh, strconv.Itoa)
+	out := nstd.PipeReduce(strCh, "even: ", func(cumulative, current string) string {
+		return cumulative + current
+	})
+	fmt.Println(out)
+	// Output: even: 2
 }
 
 func ExampleNewShutdownContext() {
