@@ -53,3 +53,10 @@ func TestPipeline(t *testing.T) {
 		nstd.RequireEqual(t, result2, "4.0,8.0,12.0")
 	})
 }
+
+func TestPipeTo(t *testing.T) {
+	ch := nstd.PipeFrom(0, 0, 1, 2, 3, 4)
+	for i, v := range nstd.PipeTo(ch) {
+		nstd.RequireEqual(t, v, i)
+	}
+}
