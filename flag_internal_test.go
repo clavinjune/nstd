@@ -16,11 +16,11 @@ func TestFlagSet_getFromEnv(t *testing.T) {
 
 	val, ok := fs.getFromEnv("str")
 	RequireTrue(t, ok)
-	RequireEqual(t, "from-env", val)
+	RequireEqual(t, val, "from-env")
 	val, ok = fs.getFromEnv("int")
 	RequireTrue(t, ok)
-	RequireEqual(t, "42", val)
+	RequireEqual(t, val, "42")
 	val, ok = fs.getFromEnv("bool")
 	RequireTrue(t, ok)
-	RequireEqual(t, "true", val)
+	RequireEqual(t, val, "true")
 }

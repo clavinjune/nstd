@@ -18,7 +18,7 @@ type shutdownCause struct {
 }
 
 // newShutdownCause creates a new shutdownCause with the given signal.
-func newShutdownCause(s os.Signal) error {
+func newShutdownCause(s os.Signal) *shutdownCause {
 	return &shutdownCause{s: s}
 }
 

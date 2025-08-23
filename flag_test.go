@@ -20,9 +20,9 @@ func TestFlagSet_FromEnv(t *testing.T) {
 	boolFlag := fs.Bool("bool", false, "usage")
 
 	RequireNil(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
-	RequireEqual(t, "from-env", *strFlag)
-	RequireEqual(t, 42, *intFlag)
-	RequireEqual(t, true, *boolFlag)
+	RequireEqual(t, *strFlag, "from-env")
+	RequireEqual(t, *intFlag, 42)
+	RequireEqual(t, *boolFlag, true)
 }
 
 func TestFlagSet_FromArgs(t *testing.T) {
@@ -34,9 +34,9 @@ func TestFlagSet_FromArgs(t *testing.T) {
 	boolFlag := fs.Bool("bool", false, "usage")
 
 	RequireNil(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
-	RequireEqual(t, "from-args", *strFlag)
-	RequireEqual(t, 100, *intFlag)
-	RequireEqual(t, true, *boolFlag)
+	RequireEqual(t, *strFlag, "from-args")
+	RequireEqual(t, *intFlag, 100)
+	RequireEqual(t, *boolFlag, true)
 }
 
 func TestFlagSet(t *testing.T) {
@@ -46,42 +46,42 @@ func TestFlagSet(t *testing.T) {
 		EnvKey   string
 		EnvValue string
 		Args     []string
-		Expected string
+		Want     string
 	}{
 		{
 			Name:     "default value, not setting env or args",
 			EnvKey:   "",
 			EnvValue: "",
 			Args:     nil,
-			Expected: "default",
+			Want:     "default",
 		},
 		{
 			Name:     "setting correct env",
 			EnvKey:   "TEST_NAME",
 			EnvValue: "from-env",
 			Args:     nil,
-			Expected: "from-env",
+			Want:     "from-env",
 		},
 		{
 			Name:     "setting not related env",
 			EnvKey:   "TEST_NAME_NOT_RELATED",
 			EnvValue: "not-related",
 			Args:     nil,
-			Expected: "default",
+			Want:     "default",
 		},
 		{
 			Name:     "setting correct args",
 			EnvKey:   "",
 			EnvValue: "",
 			Args:     []string{"--name", "from-args"},
-			Expected: "from-args",
+			Want:     "from-args",
 		},
 		{
 			Name:     "setting both correct args and env",
 			EnvKey:   "TEST_NAME",
 			EnvValue: "from-env",
 			Args:     []string{"--name", "from-args"},
-			Expected: "from-env",
+			Want:     "from-env",
 		},
 	}
 
@@ -99,7 +99,7 @@ func TestFlagSet(t *testing.T) {
 
 			RequireNotNil(t, fs.FlagSet())
 			RequireNil(t, fs.Parse(tc.Args...))
-			RequireEqual(t, tc.Expected, *nameFlag)
+			RequireEqual(t, *nameFlag, tc.Want)
 		})
 	}
 }
