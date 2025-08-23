@@ -19,7 +19,7 @@ func TestFlagSet_FromEnv(t *testing.T) {
 	intFlag := fs.Int("int", 0, "usage")
 	boolFlag := fs.Bool("bool", false, "usage")
 
-	RequireNoErr(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
+	RequireNil(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
 	RequireEqual(t, "from-env", *strFlag)
 	RequireEqual(t, 42, *intFlag)
 	RequireEqual(t, true, *boolFlag)
@@ -33,7 +33,7 @@ func TestFlagSet_FromArgs(t *testing.T) {
 	intFlag := fs.Int("int", 0, "usage")
 	boolFlag := fs.Bool("bool", false, "usage")
 
-	RequireNoErr(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
+	RequireNil(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
 	RequireEqual(t, "from-args", *strFlag)
 	RequireEqual(t, 100, *intFlag)
 	RequireEqual(t, true, *boolFlag)
@@ -98,7 +98,7 @@ func TestFlagSet(t *testing.T) {
 			nameFlag := fs.String("name", "default", "usage")
 
 			RequireNotNil(t, fs.FlagSet())
-			RequireNoErr(t, fs.Parse(tc.Args...))
+			RequireNil(t, fs.Parse(tc.Args...))
 			RequireEqual(t, tc.Expected, *nameFlag)
 		})
 	}

@@ -20,7 +20,7 @@ func TestShutdownContext(t *testing.T) {
 		defer cancel()
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.DeadlineExceeded, err)
 
 	})
@@ -34,7 +34,7 @@ func TestShutdownContext(t *testing.T) {
 		}()
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.Canceled, err)
 	})
 
@@ -43,11 +43,11 @@ func TestShutdownContext(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			RequireNoErr(t, syscall.Kill(os.Getpid(), syscall.SIGINT))
+			RequireNil(t, syscall.Kill(os.Getpid(), syscall.SIGINT))
 		}()
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.Canceled, err)
 	})
 
@@ -56,11 +56,11 @@ func TestShutdownContext(t *testing.T) {
 		defer cancel()
 
 		go func() {
-			RequireNoErr(t, syscall.Kill(os.Getpid(), syscall.SIGTERM))
+			RequireNil(t, syscall.Kill(os.Getpid(), syscall.SIGTERM))
 		}()
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.Canceled, err)
 	})
 
@@ -71,10 +71,10 @@ func TestShutdownContext(t *testing.T) {
 		ctx, cancel := NewShutdownContext(baseCtx)
 		defer cancel()
 
-		RequireNoErr(t, syscall.Kill(os.Getpid(), syscall.SIGCHLD))
+		RequireNil(t, syscall.Kill(os.Getpid(), syscall.SIGCHLD))
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.DeadlineExceeded, err)
 	})
 
@@ -88,7 +88,7 @@ func TestShutdownContext(t *testing.T) {
 		}()
 
 		err := Wait(ctx, errChan)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, sql.ErrNoRows, err)
 	})
 }
@@ -102,7 +102,7 @@ func TestShutdownContextWithCause(t *testing.T) {
 		defer cancel(context.Canceled)
 
 		err := ctx.Wait(nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.DeadlineExceeded, err)
 
 	})
@@ -116,7 +116,7 @@ func TestShutdownContextWithCause(t *testing.T) {
 		}()
 
 		err := ctx.Wait(nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.Canceled, err)
 	})
 
@@ -125,11 +125,11 @@ func TestShutdownContextWithCause(t *testing.T) {
 		defer cancel(context.Canceled)
 
 		go func() {
-			RequireNoErr(t, syscall.Kill(os.Getpid(), syscall.SIGINT))
+			RequireNil(t, syscall.Kill(os.Getpid(), syscall.SIGINT))
 		}()
 
 		err := ctx.Wait(nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireErrIs(t, err, context.Canceled)
 	})
 
@@ -138,11 +138,11 @@ func TestShutdownContextWithCause(t *testing.T) {
 		defer cancel(context.Canceled)
 
 		go func() {
-			RequireNoErr(t, syscall.Kill(os.Getpid(), syscall.SIGTERM))
+			RequireNil(t, syscall.Kill(os.Getpid(), syscall.SIGTERM))
 		}()
 
 		err := ctx.Wait(nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireErrIs(t, err, context.Canceled)
 	})
 
@@ -153,10 +153,10 @@ func TestShutdownContextWithCause(t *testing.T) {
 		ctx, cancel := NewShutdownContextWithCause(baseCtx)
 		defer cancel(context.Canceled)
 
-		RequireNoErr(t, syscall.Kill(os.Getpid(), syscall.SIGCHLD))
+		RequireNil(t, syscall.Kill(os.Getpid(), syscall.SIGCHLD))
 
 		err := ctx.Wait(nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.DeadlineExceeded, err)
 	})
 
@@ -170,7 +170,7 @@ func TestShutdownContextWithCause(t *testing.T) {
 		}()
 
 		err := ctx.Wait(errChan)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, sql.ErrNoRows, err)
 	})
 }
@@ -184,7 +184,7 @@ func TestShutdownContextCombined(t *testing.T) {
 		defer cancel(context.Canceled)
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.DeadlineExceeded, err)
 
 	})
@@ -198,7 +198,7 @@ func TestShutdownContextCombined(t *testing.T) {
 		}()
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.Canceled, err)
 	})
 
@@ -207,11 +207,11 @@ func TestShutdownContextCombined(t *testing.T) {
 		defer cancel(context.Canceled)
 
 		go func() {
-			RequireNoErr(t, syscall.Kill(os.Getpid(), syscall.SIGINT))
+			RequireNil(t, syscall.Kill(os.Getpid(), syscall.SIGINT))
 		}()
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireErrIs(t, err, context.Canceled)
 	})
 
@@ -220,11 +220,11 @@ func TestShutdownContextCombined(t *testing.T) {
 		defer cancel(context.Canceled)
 
 		go func() {
-			RequireNoErr(t, syscall.Kill(os.Getpid(), syscall.SIGTERM))
+			RequireNil(t, syscall.Kill(os.Getpid(), syscall.SIGTERM))
 		}()
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireErrIs(t, err, context.Canceled)
 	})
 
@@ -235,10 +235,10 @@ func TestShutdownContextCombined(t *testing.T) {
 		ctx, cancel := NewShutdownContextWithCause(baseCtx)
 		defer cancel(context.Canceled)
 
-		RequireNoErr(t, syscall.Kill(os.Getpid(), syscall.SIGCHLD))
+		RequireNil(t, syscall.Kill(os.Getpid(), syscall.SIGCHLD))
 
 		err := Wait(ctx, nil)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, context.DeadlineExceeded, err)
 	})
 
@@ -252,7 +252,7 @@ func TestShutdownContextCombined(t *testing.T) {
 		}()
 
 		err := Wait(ctx, errChan)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, sql.ErrNoRows, err)
 	})
 }

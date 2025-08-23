@@ -2,89 +2,57 @@ package nstd
 
 import (
 	"errors"
-	"strings"
 	"testing"
 )
 
-// RequireNoErr checks if the error is nil, and if not, it fails the test with the error message.
-func RequireNoErr(t *testing.T, err error) {
-	t.Helper()
-
-	if err != nil {
-		t.Fatalf("expected no error, got: %+q", err.Error())
-	}
-}
-
-// RequireErr checks if the error is not nil, and if it is nil, it fails the test with a message.
-func RequireErr(t *testing.T, err error) {
-	t.Helper()
-
-	if err == nil {
-		t.Fatal("expected an error, got nil")
-	}
-}
-
 // RequireErrIs checks if the error is of a specific type using errors.Is, and if not, it fails the test with a formatted message.
-func RequireErrIs(t *testing.T, err error, target error) {
-	t.Helper()
-	if !errors.Is(err, target) {
-		t.Fatalf("expected: %+v, actual: %+v", target, err)
+func RequireErrIs(tb testing.TB, got error, want error) {
+	tb.Helper()
+	if !errors.Is(got, want) {
+		tb.Errorf("got: %+v, want: %+v", got, want)
 	}
 }
 
 // RequireErrAs checks if the error can be cast to a specific type using errors.As, and if not, it fails the test with a formatted message.
-func RequireErrAs(t *testing.T, err error, target any) {
-	t.Helper()
-	if !errors.As(err, target) {
-		t.Fatalf("expected: %+v, actual: %+v", target, err)
+func RequireErrAs(tb testing.TB, got error, want any) {
+	tb.Helper()
+	if !errors.As(got, want) {
+		tb.Errorf("got: %+v, want: %+v", got, want)
 	}
 }
 
 // RequireEqual checks if the expected and actual values are equal, and if not, it fails the test with a formatted message.
-func RequireEqual[T comparable](t *testing.T, expected, actual T) {
-	t.Helper()
+func RequireEqual[T comparable](tb testing.TB, got, want T) {
+	tb.Helper()
 
-	if expected != actual {
-		t.Fatalf("expected: %+v, actual: %+v", expected, actual)
+	if got != want {
+		tb.Errorf("got: %+v, want: %+v", got, want)
 	}
 }
 
 // RequireTrue checks if the condition is true, and if not, it fails the test with a message.
-func RequireTrue(t *testing.T, condition bool) {
-	t.Helper()
+func RequireTrue(tb testing.TB, got bool) {
+	tb.Helper()
 
-	if !condition {
-		t.Fatal("expected condition to be true, got false")
+	if !got {
+		tb.Errorf("got false, want true")
 	}
-}
-
-// RequireContain checks if the haystack string contains the needle string, and if not, it fails the test with a formatted message.
-func RequireContain(t *testing.T, haystack, needle string) {
-	t.Helper()
-
-	if strings.Contains(haystack, needle) {
-		return
-	}
-
-	t.Fatalf("expected %q to contain %q", haystack, needle)
-}
-
-// RequireNotContain checks if the haystack string does not contain the needle string, and if it does, it fails the test with a formatted message.
-func RequireNotContain(t *testing.T, haystack, needle string) {
-	t.Helper()
-
-	if !strings.Contains(haystack, needle) {
-		return
-	}
-
-	t.Fatalf("expected %q to not contain %q", haystack, needle)
 }
 
 // RequireNotNil checks if the object is not nil, and if it is nil, it fails the test with a message.
-func RequireNotNil(t *testing.T, o any) {
-	t.Helper()
+func RequireNotNil(tb testing.TB, o any) {
+	tb.Helper()
 
 	if o == nil {
-		t.Fatal("expected object to not be nil, got nil")
+		tb.Error("got nil, want not nil")
+	}
+}
+
+// RequireNil checks if the object is nil, and if it is not nil, it fails the test with a message.
+func RequireNil(tb testing.TB, o any) {
+	tb.Helper()
+
+	if o != nil {
+		tb.Errorf("got %+v, want nil", o)
 	}
 }

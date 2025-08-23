@@ -19,7 +19,7 @@ func TestBufferedWriter(t *testing.T) {
 
 		n, err := bw.Write([]byte("Hello, World!"))
 		RequireEqual(t, 13, n)
-		RequireNoErr(t, err)
+		RequireNil(t, err)
 		RequireEqual(t, "", b.String())
 
 		time.Sleep(150 * time.Millisecond)
@@ -31,7 +31,7 @@ func TestBufferedWriter(t *testing.T) {
 
 		n, err := bw.Write([]byte("more than 15bytes should be flushed immediately"))
 		RequireEqual(t, 47, n)
-		RequireNoErr(t, err)
+		RequireNil(t, err)
 		RequireEqual(t, "more than 15bytes should be flushed immediately", b.String())
 	})
 
@@ -39,8 +39,8 @@ func TestBufferedWriter(t *testing.T) {
 		defer b.Reset()
 		n, err := bw.Write([]byte("a"))
 		RequireEqual(t, 1, n)
-		RequireNoErr(t, err)
-		RequireNoErr(t, bw.Flush())
+		RequireNil(t, err)
+		RequireNil(t, bw.Flush())
 		RequireEqual(t, "a", b.String())
 	})
 
@@ -50,7 +50,7 @@ func TestBufferedWriter(t *testing.T) {
 
 		n, err := bw.Write([]byte("This should not be written"))
 		RequireEqual(t, 0, n)
-		RequireErr(t, err)
+		RequireNotNil(t, err)
 		RequireEqual(t, "", b.String())
 	})
 }

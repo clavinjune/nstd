@@ -3,6 +3,7 @@ package nstd_test
 import (
 	"bytes"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	. "github.com/clavinjune/nstd"
@@ -17,9 +18,9 @@ func TestNewSlog(t *testing.T) {
 		logger.Debug("should be shown")
 
 		m := make(map[string]any)
-		RequireNoErr(t, json.Unmarshal(b.Bytes(), &m))
-		RequireEqual(t, "should be shown", m["msg"])
-		RequireEqual(t, "DEBUG", m["level"])
+		RequireNil(t, json.Unmarshal(b.Bytes(), &m))
+		RequireEqual(t, m["msg"], "should be shown")
+		RequireEqual(t, m["level"], "DEBUG")
 		_, ok := m["source"]
 		RequireTrue(t, ok)
 	})
@@ -33,9 +34,9 @@ func TestNewSlog(t *testing.T) {
 		logger.Info("should be shown")
 
 		m := make(map[string]any)
-		RequireNoErr(t, json.Unmarshal(b.Bytes(), &m))
-		RequireEqual(t, "should be shown", m["msg"])
-		RequireEqual(t, "INFO", m["level"])
+		RequireNil(t, json.Unmarshal(b.Bytes(), &m))
+		RequireEqual(t, m["msg"], "should be shown")
+		RequireEqual(t, m["level"], "INFO")
 		_, ok := m["source"]
 		RequireTrue(t, !ok)
 	})
@@ -47,11 +48,11 @@ func TestNewSlog(t *testing.T) {
 		logger.Debug("shouldn't be shown")
 		logger.Info("should be shown")
 
-		RequireErr(t, json.Unmarshal(b.Bytes(), &struct{}{}))
+		RequireNotNil(t, json.Unmarshal(b.Bytes(), &struct{}{}))
 		str := b.String()
-		RequireContain(t, str, `level=INFO`)
-		RequireContain(t, str, `msg="should be shown"`)
-		RequireNotContain(t, str, "source=")
+		RequireTrue(t, strings.Contains(str, `level=INFO`))
+		RequireTrue(t, strings.Contains(str, `msg="should be shown"`))
+		RequireTrue(t, !strings.Contains(str, `source=`))
 	})
 	t.Run("debug level with unstructured logging", func(t *testing.T) {
 		t.Parallel()
@@ -60,10 +61,10 @@ func TestNewSlog(t *testing.T) {
 		logger := NewSlog(b, true, false)
 		logger.Debug("should be shown")
 
-		RequireErr(t, json.Unmarshal(b.Bytes(), &struct{}{}))
+		RequireNotNil(t, json.Unmarshal(b.Bytes(), &struct{}{}))
 		str := b.String()
-		RequireContain(t, str, `level=DEBUG`)
-		RequireContain(t, str, `msg="should be shown"`)
-		RequireContain(t, str, `source=`)
+		RequireTrue(t, strings.Contains(str, `level=DEBUG`))
+		RequireTrue(t, strings.Contains(str, `msg="should be shown"`))
+		RequireTrue(t, strings.Contains(str, `source=`))
 	})
 }
