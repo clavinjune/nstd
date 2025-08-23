@@ -2,15 +2,14 @@ package nstd
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"testing"
 )
 
 func TestShutdownCause(t *testing.T) {
 	err := newShutdownCause(os.Interrupt)
-	fmt.Println(err.Error())
-	fmt.Println(err.String())
+	RequireEqual(t, err.String(), "interrupt")
+	RequireEqual(t, err.Error(), "context canceled: interrupt")
 	RequireNotNil(t, err)
 	RequireNotNil(t, err)
 	RequireErrIs(t, err, context.Canceled)
