@@ -55,8 +55,9 @@ func TestPipeline(t *testing.T) {
 }
 
 func TestPipeTo(t *testing.T) {
-	ch := nstd.PipeFrom(0, 0, 1, 2, 3, 4)
-	for i, v := range nstd.PipeTo(ch) {
+	in := nstd.PipeFrom(0, []int{0, 1, 2, 3, 4})
+	out := nstd.PipeFlatten(in)
+	for i, v := range nstd.PipeTo(out) {
 		nstd.RequireEqual(t, v, i)
 	}
 }

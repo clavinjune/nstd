@@ -13,6 +13,20 @@ func PipeFrom[T any](buffer int, t ...T) <-chan T {
 	return out
 }
 
+// PipeFlatten transforms []T into T
+func PipeFlatten[T any](in <-chan []T) <-chan T {
+	out := make(chan T)
+	go func() {
+		defer close(out)
+		for i := range in {
+			for ii := range i {
+				out <- i[ii]
+			}
+		}
+	}()
+	return out
+}
+
 // PipeMap transforms T into U using fn
 func PipeMap[T, U any](in <-chan T, fn func(T) U) <-chan U {
 	out := make(chan U)
