@@ -8,6 +8,33 @@ import (
 	. "github.com/clavinjune/nstd"
 )
 
+func TestFlagSet_Bool(t *testing.T) {
+	defer func() {
+		i := recover()
+		RequireNotNil(t, i)
+		RequireEqual(t, i.(string), `strconv.ParseBool: parsing "anystring": invalid syntax`)
+	}()
+	defer os.Clearenv()
+	t.Setenv("TEST_BOOL", "anystring")
+	fs := NewFlagSet("test", flag.ExitOnError)
+	_ = fs.Bool("bool", false, "usage")
+
+	RequireNil(t, fs.Parse())
+}
+
+func TestFlagSet_Int(t *testing.T) {
+	defer func() {
+		i := recover()
+		RequireNotNil(t, i)
+		RequireEqual(t, i.(string), `strconv.Atoi: parsing "anystring": invalid syntax`)
+	}()
+	defer os.Clearenv()
+	t.Setenv("TEST_INT", "anystring")
+	fs := NewFlagSet("test", flag.ExitOnError)
+	_ = fs.Int("int", 0, "usage")
+
+	RequireNil(t, fs.Parse())
+}
 func TestFlagSet_FromEnv(t *testing.T) {
 	defer os.Clearenv()
 	t.Setenv("TEST_STR", "from-env")
