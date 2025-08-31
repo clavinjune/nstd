@@ -35,7 +35,7 @@ func RequireTrue(tb testing.TB, got bool) {
 	tb.Helper()
 
 	if !got {
-		tb.Errorf("got false, want true")
+		tb.Errorf("got: false, want: true")
 	}
 }
 
@@ -44,7 +44,7 @@ func RequireNotNil(tb testing.TB, o any) {
 	tb.Helper()
 
 	if o == nil {
-		tb.Error("got nil, want not nil")
+		tb.Error("got: nil, want: not nil")
 	}
 }
 
@@ -53,6 +53,6 @@ func RequireNil(tb testing.TB, o any) {
 	tb.Helper()
 
 	if o != nil {
-		tb.Errorf("got %+v, want nil", o)
+		tb.Errorf("got: %+v, want: nil", o)
 	}
 }
