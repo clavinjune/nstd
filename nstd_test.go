@@ -53,6 +53,22 @@ func ExamplePipeFrom() {
 	// Output: even: 2
 }
 
+func ExamplePool() {
+	p := nstd.NewPool(func() *bytes.Buffer {
+		return new(bytes.Buffer)
+	})
+
+	b := p.Get()
+	defer func() {
+		b.Reset()
+		p.Put(b)
+
+	}()
+	fmt.Fprint(b, "Hello, World!")
+	fmt.Println(b.String())
+	// Output: Hello, World!
+}
+
 func ExampleNewShutdownContext() {
 	// ShutdownContext will be canceled when a SIGINT or SIGTERM is received or manually canceled.
 	ctx, cancel := nstd.NewShutdownContext(context.Background())
