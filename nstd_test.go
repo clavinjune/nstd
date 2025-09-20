@@ -40,6 +40,13 @@ func ExampleFlagSet() {
 	// Output: from-envs
 }
 
+func ExampleNew() {
+	x := nstd.New(123)
+
+	fmt.Printf("%T %v", x, *x)
+	// Output: *int 123
+}
+
 func ExamplePipeFrom() {
 	ch := nstd.PipeFrom(0, 1, 2, 3)
 	evenCh := nstd.PipeFilter(ch, func(i int) bool {
