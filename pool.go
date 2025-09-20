@@ -27,3 +27,10 @@ func NewPool[T any](newFn func() T) *Pool[T] {
 		},
 	}
 }
+
+// NewPtrPool simplifies NewPool to only return the pointer of T
+func NewPtrPool[T any]() *Pool[*T] {
+	return NewPool(func() *T {
+		return new(T)
+	})
+}

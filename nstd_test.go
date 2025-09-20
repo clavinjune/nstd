@@ -64,6 +64,8 @@ func ExamplePool() {
 	p := nstd.NewPool(func() *bytes.Buffer {
 		return new(bytes.Buffer)
 	})
+	// above can be simplified to
+	_ = nstd.NewPtrPool[bytes.Buffer]()
 
 	b := p.Get()
 	defer func() {
