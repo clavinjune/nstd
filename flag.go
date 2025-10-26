@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -78,6 +79,28 @@ func (fs *FlagSet) Int(name string, value int, usage string) *int {
 	}
 
 	if i, err := strconv.Atoi(e); err != nil {
+		panic(err.Error())
+	} else {
+		return &i
+	}
+}
+
+// Slice wraps String and expect comma-separated string
+func (fs *FlagSet) Slice(name string, value []string, usage string) []string {
+	return strings.Split(
+		*fs.String(name, strings.Join(value, ","), usage),
+		",",
+	)
+}
+
+func (fs *FlagSet) Duration(name string, value time.Duration, usage string) *time.Duration {
+	f := fs.std.Duration(name, value, usage)
+	e, ok := fs.getFromEnv(name)
+	if !ok {
+		return f
+	}
+
+	if i, err := time.ParseDuration(e); err != nil {
 		panic(err.Error())
 	} else {
 		return &i

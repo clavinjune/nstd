@@ -4,9 +4,24 @@ import (
 	"flag"
 	"os"
 	"testing"
+	"time"
 
 	. "github.com/clavinjune/nstd"
 )
+
+func TestFlagSet_Duration(t *testing.T) {
+	defer func() {
+		i := recover()
+		RequireNotNil(t, i)
+		RequireEqual(t, i.(string), `time: invalid duration "anystring"`)
+	}()
+	defer os.Clearenv()
+	t.Setenv("TEST_DURATION", "anystring")
+	fs := NewFlagSet("test", flag.ExitOnError)
+	_ = fs.Duration("duration", time.Second, "usage")
+
+	RequireNil(t, fs.Parse())
+}
 
 func TestFlagSet_Bool(t *testing.T) {
 	defer func() {
@@ -40,16 +55,19 @@ func TestFlagSet_FromEnv(t *testing.T) {
 	t.Setenv("TEST_STR", "from-env")
 	t.Setenv("TEST_INT", "42")
 	t.Setenv("TEST_BOOL", "true")
+	t.Setenv("TEST_DURATION", "1h")
 
 	fs := NewFlagSet("test", flag.ExitOnError)
 	strFlag := fs.String("str", "default", "usage")
 	intFlag := fs.Int("int", 0, "usage")
 	boolFlag := fs.Bool("bool", false, "usage")
+	durationFlag := fs.Duration("duration", time.Second, "usage")
 
-	RequireNil(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
+	RequireNil(t, fs.Parse("--str", "from-args", "--int", "100", "--bool", "--duration=1m"))
 	RequireEqual(t, *strFlag, "from-env")
 	RequireEqual(t, *intFlag, 42)
 	RequireEqual(t, *boolFlag, true)
+	RequireEqual(t, *durationFlag, time.Hour)
 }
 
 func TestFlagSet_FromArgs(t *testing.T) {
@@ -59,11 +77,13 @@ func TestFlagSet_FromArgs(t *testing.T) {
 	strFlag := fs.String("str", "default", "usage")
 	intFlag := fs.Int("int", 0, "usage")
 	boolFlag := fs.Bool("bool", false, "usage")
+	durationFlag := fs.Duration("duration", time.Second, "usage")
 
-	RequireNil(t, fs.Parse("--str", "from-args", "--int", "100", "--bool"))
+	RequireNil(t, fs.Parse("--str", "from-args", "--int", "100", "--bool", "--duration=1m"))
 	RequireEqual(t, *strFlag, "from-args")
 	RequireEqual(t, *intFlag, 100)
 	RequireEqual(t, *boolFlag, true)
+	RequireEqual(t, *durationFlag, time.Minute)
 }
 
 func TestFlagSet(t *testing.T) {
