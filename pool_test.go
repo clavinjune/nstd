@@ -2,8 +2,7 @@ package nstd_test
 
 import (
 	"testing"
-
-	. "github.com/clavinjune/nstd"
+	// . "github.com/clavinjune/nstd"
 )
 
 // ToDo: add test
