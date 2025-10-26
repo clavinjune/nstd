@@ -1,7 +1,6 @@
 package nstd_test
 
 import (
-	"bytes"
 	"context"
 	"testing"
 	"time"
@@ -10,8 +9,8 @@ import (
 )
 
 func TestBufferedWriter(t *testing.T) {
-	b := new(bytes.Buffer)
-	bw, closeBw := NewBufferedWriter(context.Background(), b, 15, 100*time.Millisecond)
+	var b BytesBuffer
+	bw, closeBw := NewBufferedWriter(context.Background(), &b, 15, 100*time.Millisecond)
 	defer closeBw()
 
 	t.Run("more than flush interval", func(t *testing.T) {

@@ -15,9 +15,9 @@ import (
 )
 
 func ExampleBufferedWriter() {
-	b := new(bytes.Buffer) // you can use any io.Writer here including os.Stdout
+	var b nstd.BytesBuffer // you can use any thread-safe io.Writer here including os.Stdout
 
-	bw, closeBw := nstd.NewBufferedWriter(context.Background(), b, 15, 100*time.Millisecond)
+	bw, closeBw := nstd.NewBufferedWriter(context.Background(), &b, 15, 100*time.Millisecond)
 	defer closeBw()
 
 	bw.Write([]byte("Hello, World!"))

@@ -39,7 +39,7 @@ func NewBufferedWriter(ctx context.Context, w io.Writer, maxBufferSize int, flus
 	go bw.autoFlush()
 
 	return bw, func() {
-		bw.Flush()
+		_ = bw.Flush()
 		cancel()
 	}
 }
@@ -59,7 +59,7 @@ func (b *BufferedWriter) Write(p []byte) (int, error) {
 	b.currentBufferSize += n
 
 	if b.currentBufferSize >= b.maxBufferSize {
-		err := b.Flush()
+		err := b.unsafeFlush()
 		if err != nil {
 			return 0, err
 		}
@@ -68,8 +68,7 @@ func (b *BufferedWriter) Write(p []byte) (int, error) {
 	return n, err
 }
 
-// Flush flushes the buffered data to the underlying writer.
-func (b *BufferedWriter) Flush() error {
+func (b *BufferedWriter) unsafeFlush() error {
 	if err := b.writer.Flush(); err != nil {
 		return err
 	}
@@ -77,6 +76,13 @@ func (b *BufferedWriter) Flush() error {
 	b.lastFlushAt = time.Now()
 
 	return nil
+}
+
+// Flush flushes the buffered data to the underlying writer.
+func (b *BufferedWriter) Flush() error {
+	b.Lock()
+	defer b.Unlock()
+	return b.unsafeFlush()
 }
 
 // autoFlush runs in a separate goroutine and periodically checks if the buffer should be flushed.
@@ -94,7 +100,7 @@ func (b *BufferedWriter) autoFlush() {
 		case <-t.C:
 			b.Lock()
 			if time.Since(b.lastFlushAt) >= b.flushInterval {
-				_ = b.Flush()
+				_ = b.unsafeFlush()
 			}
 			b.Unlock()
 		}
