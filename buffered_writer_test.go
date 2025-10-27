@@ -2,12 +2,19 @@ package nstd_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
 	. "github.com/clavinjune/nstd"
 )
 
+// helper for test
+type fileWriter struct{}
+
+func (fileWriter) Write([]byte) (int, error) {
+	return 0, errors.New("fileWriter error")
+}
 func TestBufferedWriter(t *testing.T) {
 	var b BytesBuffer
 	bw, closeBw := NewBufferedWriter(context.Background(), &b, 15, 100*time.Millisecond)
@@ -56,5 +63,16 @@ func TestBufferedWriter(t *testing.T) {
 		RequireEqual(t, n, 0)
 		RequireNotNil(t, err)
 		RequireEqual(t, b.String(), "")
+	})
+	t.Run("internal writer error", func(t *testing.T) {
+		defer b.Reset()
+
+		bufwriter, cancel := NewBufferedWriter(context.Background(), fileWriter{}, 15, 100*time.Millisecond)
+		defer cancel()
+		_, err := bufwriter.Write([]byte("hello there"))
+		RequireNil(t, err)
+
+		err = bufwriter.Flush()
+		RequireNotNil(t, err)
 	})
 }
