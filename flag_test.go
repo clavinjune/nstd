@@ -3,6 +3,7 @@ package nstd_test
 import (
 	"flag"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 
@@ -84,6 +85,52 @@ func TestFlagSet_FromArgs(t *testing.T) {
 	RequireEqual(t, *intFlag, 100)
 	RequireEqual(t, *boolFlag, true)
 	RequireEqual(t, *durationFlag, time.Minute)
+}
+func TestFlagSet_Slice(t *testing.T) {
+	tt := []struct {
+		Name     string
+		EnvKey   string
+		EnvValue string
+		Args     []string
+		Want     []string
+	}{
+		{
+			Name:     "default value",
+			EnvKey:   "",
+			EnvValue: "",
+			Args:     nil,
+			Want:     []string{"default", "slice"},
+		},
+		{
+			Name:     "empty env",
+			EnvKey:   "TEST_SLICE",
+			EnvValue: "",
+			Args:     nil,
+			Want:     []string{""},
+		},
+		{
+			Name:     "overriding env",
+			EnvKey:   "TEST_SLICE",
+			EnvValue: "from,env",
+			Args:     nil,
+			Want:     []string{"from", "env"},
+		},
+	}
+
+	for i := range tt {
+		tc := tt[i]
+		t.Run(tc.Name, func(t *testing.T) {
+			defer os.Clearenv()
+			if tc.EnvKey != "" {
+				t.Setenv(tc.EnvKey, tc.EnvValue)
+			}
+			fs := NewFlagSet("test", flag.ExitOnError)
+			got := fs.Slice("slice", []string{"default", "slice"}, "usage")
+
+			RequireNil(t, fs.Parse(tc.Args...))
+			RequireTrue(t, reflect.DeepEqual(got, tc.Want))
+		})
+	}
 }
 
 func TestFlagSet(t *testing.T) {
